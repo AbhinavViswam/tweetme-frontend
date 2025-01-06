@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link ,useNavigate} from 'react-router-dom'
 
 import axios from "../config/axios"
 import "../index.css"
@@ -7,6 +7,7 @@ import "../index.css"
 function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const navigate=useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await axios.post("/user/login", {
@@ -14,7 +15,7 @@ function Login() {
       password
     })
     localStorage.setItem('token', res.data.token)
-    console.log(res.data);
+    navigate("/")
   }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-green-100">
