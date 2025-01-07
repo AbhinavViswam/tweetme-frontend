@@ -10,7 +10,6 @@ function Home() {
         navigate("/login")
     }
  }, [])
-
   return (
     <div>
         <GetTweet/>
