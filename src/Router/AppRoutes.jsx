@@ -1,5 +1,5 @@
 import { BrowserRouter ,Routes, Route } from "react-router-dom";
-import {Login ,Register} from "../Components/index"
+import {Login ,Register,Navbar} from "../Components/index"
 import {Home} from "../Components/Home/Home"
 
 function AppRoutes(){
@@ -8,7 +8,12 @@ function AppRoutes(){
         <Routes>
             <Route path="/login" element={<Login/>} />
             <Route path="/register" element={<Register/>} />
-            <Route path="/" element={<Home/>} />
+            <Route path="/" element={ 
+                <div className="flex gap-3">
+                    <Navbar/>
+                    <Home/>
+                </div>
+                } />
         </Routes>
         </BrowserRouter>
     )
