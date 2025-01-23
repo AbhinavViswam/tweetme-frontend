@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from "../../config/axios";
 import { UserContext } from '../../context/UserContext';
+import "../../index.css"
 
 function Messages() {
   const [conversations, setConversations] = useState([]);
@@ -10,12 +11,14 @@ function Messages() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [myMessages, setMyMessages] = useState([]);
   const [message, setMessage] = useState();
+  const [autoScroll, setAutoScroll] = useState(true);
   const { user } = useContext(UserContext);
+  const messagesEndRef = React.useRef(null);
+  const chatContainerRef = React.useRef(null); 
 
   async function fetchConvos() {
     try {
       const res = await axios.get("/user/m/allconversations");
-      console.log(res.data.o);
       setConversations(res.data.o);
     } catch (err) {
       console.error("Error fetching conversations", err);
@@ -26,45 +29,69 @@ function Messages() {
     setLoading(true);
     fetchConvos();
     setLoading(false);
-    console.log(user)
   }, []);
 
   const openSidebar = (conversation) => {
     setSelectedConversation(conversation);
-    console.log("id:", conversation._id)
-    setSelectedConversationId(conversation._id)
+    setSelectedConversationId(conversation._id);
     setSidebarVisible(true);
   };
 
   const fetchMessages = async () => {
-    const res = await axios.get(`/user/m/${selectedConversationId}`)
-    setMyMessages(res.data.o)
-    console.log(res.data.o)
-  }
+    const res = await axios.get(`/user/m/${selectedConversationId}`);
+    setMyMessages(res.data.o);
+  };
 
-  const addMessage=async()=>{
-    
-  }
+  const addMessage = async (e) => {
+    e.preventDefault();
+    await axios.post(`/user/m/${selectedConversationId}/sent`, {
+      Text: message,
+    });
+    fetchMessages();
+    setMessage("");
+  };
 
   useEffect(() => {
+    let interval;
     if (selectedConversationId) {
       fetchMessages();
+      interval = setInterval(fetchMessages, 3000);
+
+      return () => {
+        clearInterval(interval);
+      };
     }
-    else {
-      console.log("no messages found")
-    }
-  }, [selectedConversationId])
+  }, [selectedConversationId]);
 
   const closeSidebar = () => {
     setSidebarVisible(false);
     setSelectedConversation(null);
   };
 
+ 
+  useEffect(() => {
+    if (autoScroll && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [myMessages, autoScroll]);
+
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+
+      
+      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10;
+
+      setAutoScroll(isAtBottom); 
+    }
+  };
+
   return (
     <div className="flex">
-
       <div className="max-w-[30vw] min-h-screen max-h-screen px-4 py-3 overflow-y-auto">
-        <h1 className="text-center text-green-500 font-bold text-lg py-4">MESSAGES</h1>
+        <h1 className="text-center text-green-500 font-bold text-lg py-4">
+          MESSAGES
+        </h1>
         {loading ? (
           <p>Loading...</p>
         ) : (
@@ -84,8 +111,12 @@ function Messages() {
                 className="flex flex-col relative items-center"
                 onClick={() => openSidebar(item)}
               >
-                <h3 className="text-green-600 text-lg font-semibold">{item.fullname}</h3>
-                <h5 className="opacity-50 text-xs absolute top-5">{item.username}</h5>
+                <h3 className="text-green-600 text-lg font-semibold">
+                  {item.fullname}
+                </h3>
+                <h5 className="opacity-50 text-xs absolute top-5">
+                  {item.username}
+                </h5>
               </button>
             </div>
           ))
@@ -101,24 +132,32 @@ function Messages() {
             Close
           </button>
           {selectedConversation && (
-            <div className="flex-grow">
+            <div className="flex-grow h-screen">
               <h2 className="text-green-600 text-lg font-bold">
                 Chat with {selectedConversation.fullname}
               </h2>
               <p className="text-gray-600">@{selectedConversation.username}</p>
               {myMessages ? (
-                <div>
+                <div
+                  className="border border-green-500 min-h-[75vh] max-h-[75vh] overflow-y-auto"
+                  ref={chatContainerRef} 
+                  onScroll={handleScroll} 
+                >
                   {myMessages.map((item, i) => (
                     <div
                       key={i}
-                      className={`p-2 border-b flex ${item.sender === user[0].username ? "justify-end" : "justify-start"
-                        }`}
+                      className={`p-2 border-b flex ${
+                        item.sender === user[0].username
+                          ? "justify-end"
+                          : "justify-start"
+                      }`}
                     >
                       <div
-                        className={`max-w-[70%] p-3 rounded-lg ${item.sender === user[0].username
+                        className={`max-w-[70%] p-3 rounded-lg ${
+                          item.sender === user[0].username
                             ? "bg-green-100 text-right"
                             : "bg-gray-100 text-left"
-                          }`}
+                        }`}
                       >
                         <p className="font-semibold text-green-600">
                           {item.sender === user[0].username ? "You" : item.sender}
@@ -127,6 +166,7 @@ function Messages() {
                       </div>
                     </div>
                   ))}
+                  <div ref={messagesEndRef}></div>
                 </div>
               ) : (
                 <div>
@@ -135,8 +175,10 @@ function Messages() {
               )}
             </div>
           )}
-          {/* Message Typing Form */}
-          <form className="mt-auto flex items-center border-t p-2">
+          <form
+            className="mt-auto flex items-center border-t p-2"
+            onSubmit={addMessage}
+          >
             <input
               type="text"
               value={message}
