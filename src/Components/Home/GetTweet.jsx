@@ -73,7 +73,7 @@ function GetTweet() {
             <p className="text-gray-800">{tweet.tweet}</p>
             <p className="text-gray-500 text-sm">{tweet.updatedAt}</p>
             <p className="text-green-500 font-semibold">LIKE: {tweet.likes}</p>
-            <p>{tweet.userid}</p>
+            {/* <p>{tweet.userid}</p> */}
             <button className="text-blue-500 hover:underline" onClick={() => {
               setTweet_id(tweet._id)
               setUserId(tweet.userid)

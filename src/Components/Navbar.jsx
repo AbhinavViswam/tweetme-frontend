@@ -5,6 +5,7 @@ import axios from "../config/axios";
 function Navbar() {
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState({});
+    const [postNewTweet,setPostNewTweet] = useState("");
     
     const fetchUser = async () => {
         setLoading(true);
@@ -18,12 +19,22 @@ function Navbar() {
         }
     };
 
+    const postTweet=async(e)=>{
+        e.preventDefault();
+        await axios.post("/tweet/posttweet",{
+            tweet:postNewTweet
+        })
+        setPostNewTweet("")
+    }
+
     useEffect(() => {
+        setLoading(true)
         fetchUser();
+        setLoading(false)
     }, []);
 
     return (
-        <div className='w-full md:max-w-[25vw] flex flex-col items-center py-4 mt-4 h-screen bg-green-100'>
+        <div className='w-full md:max-w-[25vw] flex flex-col items-center py-4 mt-4 h-screen bg-green-100 justify-center gap-4'>
             <h1 className='text-2xl mb-4 font-bold text-green-600 font-instagram'>Tweet Me</h1>
             <div className='max-w-[24vw] md:w-full bg-white rounded-lg shadow-md p-4'>
                 {loading ? (
@@ -45,12 +56,19 @@ function Navbar() {
                                 <p className='text-sm text-green-600'>Following</p>
                             </div>
                             <div className='text-center'>
-                                <p className='text-lg font-bold text-green-800'>{userData.tweet.length}</p>
+                                <p className='text-lg font-bold text-green-800'>{userData.tweet?.length}</p>
                                 <p className='text-sm text-green-600'>Posts</p>
                             </div>
                         </div>
                     </div>
                 )}
+            </div>
+
+            <div className="post_tweet w- p-4">
+               <form onSubmit={postTweet} className='flex flex-col w-full justify-center items-center gap-1'>
+                <textarea placeholder='tweet here...'  value={postNewTweet} onChange={(e)=>setPostNewTweet(e.target.value)} className='min-w-[24vw] max-w-[24vw] min-h-[20vh] max-h-[20vh] shadow-md outline-none p-3'/>
+                    <button className='text-md font-bold text-green-600 bg-white px-6 py-2 rounded-md shadow-md hover:bg-green-50 min-w-[24vw] max-w-[24vw]'>POST</button>
+               </form>
             </div>
         </div>
     );
