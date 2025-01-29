@@ -10,7 +10,7 @@ function Messages() {
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [myMessages, setMyMessages] = useState([]);
-  const [message, setMessage] = useState();
+  const [message, setMessage] = useState("");
   const [autoScroll, setAutoScroll] = useState(true);
   const { user } = useContext(UserContext);
   const messagesEndRef = React.useRef(null);
@@ -66,9 +66,9 @@ function Messages() {
   const closeSidebar = () => {
     setSidebarVisible(false);
     setSelectedConversation(null);
+    setSelectedConversationId(null);
   };
 
- 
   useEffect(() => {
     if (autoScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -78,17 +78,14 @@ function Messages() {
   const handleScroll = () => {
     if (chatContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-
-      
       const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10;
-
       setAutoScroll(isAtBottom); 
     }
   };
 
   return (
-    <div className="flex">
-      <div className="max-w-[30vw] min-h-screen max-h-screen px-4 py-3 overflow-y-auto">
+    <div className="flex flex-col md:flex-row overflow-y-auto overflow-x-hidden">
+      <div className="max-w-full md:max-w-[30vw] min-h-screen px-4 py-3 overflow-y-auto  overflow-x-hidden">
         <h1 className="text-center text-green-500 font-bold text-lg py-4">
           MESSAGES
         </h1>
@@ -98,9 +95,9 @@ function Messages() {
           conversations.map((item, i) => (
             <div
               key={i}
-              className="msg-box min-w-[25vw] max-w-[30vw] flex gap-4 py-2"
+              className="msg-box min-w-full md:min-w-[25vw] max-w-full md:max-w-[30vw] flex gap-4 py-2"
             >
-              <div className="w-12 h-12 md:w-12 md:h-12 border-2 border-green-600 rounded-full overflow-hidden mb-4">
+              <div className="w-12 h-12 border-2 border-green-600 rounded-full overflow-hidden mb-4">
                 <img
                   src={item.profilePicture}
                   alt={"No Picture Added"}
@@ -124,7 +121,7 @@ function Messages() {
       </div>
 
       {sidebarVisible && (
-        <div className="sidebar w-[30vw] h-screen bg-gray-100 shadow-lg p-4 fixed right-0 top-0 z-50 flex flex-col">
+        <div className="sidebar w-full md:w-[30vw] h-screen bg-gray-100 shadow-lg p-4 fixed right-0 top-0 z-50 flex flex-col">
           <button
             className="text-red-500 font-bold float-right"
             onClick={closeSidebar}
