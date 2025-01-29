@@ -28,7 +28,7 @@ function AppRoutes() {
                 </div>
 
                 {/* Main content layout */}
-                <div className="flex w-full md:w-[60%] relative">
+                <div className="flex w-full md:w-[60%] relative bg-green-100">
                   <div className="w-full md:w-[75%]">
                     <Home />
                   </div>
