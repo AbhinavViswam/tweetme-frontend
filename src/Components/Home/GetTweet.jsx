@@ -53,7 +53,7 @@ function GetTweet() {
   }, [tweet_id]);
 
   return (
-    <div className="bg-gray-100 min-h-screen w-full max-w-[1200px] mx-auto p-4 flex flex-col md:flex-row gap-4">
+    <div className="bg-green-100 min-h-screen w-full max-w-[1200px] mx-auto p-4 flex flex-col md:flex-row gap-4">
 
       {/* Tweet List Section */}
       <div className="flex-grow md:max-w-[60vw] max-h-screen overflow-y-auto">

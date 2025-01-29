@@ -21,7 +21,7 @@ function AppRoutes() {
           path="/"
           element={
             <UserAuth>
-              <div className="flex flex-col md:flex-row gap-3 pt-16 relative">
+              <div className="flex flex-col md:flex-row gap-3 pt-16 relative md:bg-green-100">
                 {/* Navbar */}
                 <div className="w-full md:w-[30%]"> {/* Set a fixed width for Navbar */}
                   <Navbar />
